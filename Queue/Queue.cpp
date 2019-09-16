@@ -3,7 +3,7 @@
 
 Queue::Queue(int _size) :size(_size), front(0), end(0), empty(true)
 {
-	arr = new int[size];
+	arr = new student[size];
 }
 
 Queue::~Queue()
@@ -35,7 +35,7 @@ Queue& Queue::operator=(const Queue& other)
 	return *this;
 }
 
-void Queue::put(int a)
+void Queue::put(student a)
 {
 	if (end >= size && front > 0)
 	{
@@ -59,11 +59,11 @@ void Queue::put(int a)
 	}
 }
 
-int Queue::get()
+student& Queue::get()
 {
 	if (front < end && front < size && empty == false)
 	{
-		int temp = arr[front];
+		student temp = arr[front];
 		front++;
 		if (front >= size && front != end)
 		{

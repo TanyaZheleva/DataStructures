@@ -14,14 +14,14 @@ public:
 	~Queue();
 	Queue(const Queue& old);
 	Queue& operator=(const Queue& other);
-	void put(int element);
-	int get();
+	void put(student element);
+	student& get();
 	bool isEmpty() const;
 
-//private:
+private:
 	int size;
 	int front;
 	int end;
 	bool empty;
-	int* arr;
+	student* arr;
 };
