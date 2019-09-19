@@ -14,11 +14,13 @@ public:
 	~List();
 
 	void InsertBegining(List<data, keytype>** head, const data _info, const keytype _key);
-	void InsertAfter(List<data, keytype>* head, const keytype _after, const data _info, const keytype _key);
-	void InsertBefore(List<data, keytype>* head, const keytype _before, const data _info, keytype _key);
-	void DeleteNode(List<data, keytype>* head, const keytype _delete);
+	void InsertAfter(List<data, keytype>** head, const keytype _after, const data _info, const keytype _key);
+	void InsertBefore(List<data, keytype>** head, const keytype _before, const data _info, keytype _key);
+	void DeleteNode(List<data, keytype>** head, const keytype _delete);
+
 	List* search(List<data, keytype>* head, const keytype _find);
 	void printList(List<data, keytype>* head);
+
 private:
 	data info;
 	keytype key;
@@ -80,15 +82,10 @@ inline void List<data, keytype>::InsertBegining(List<data, keytype>** head, cons
 }
 
 template<class data, class keytype>
-inline void List<data, keytype>::InsertAfter(List<data, keytype>* head, const keytype _after, const data _info, const keytype _key)
+inline void List<data, keytype>::InsertAfter(List<data, keytype>** head, const keytype _after, const data _info, const keytype _key)
 {
-	List<data, keytype>* tempHead = search(head, _after);
-
-	if (tempHead == nullptr)
-	{
-		this->InsertBegining(&head, _info, _key);
-	}
-	else
+	List<data, keytype>* tempHead = search(*head, _after);
+	if (tempHead != nullptr)
 	{
 		List<data, keytype>* temp = new List<data, keytype>(*this);
 		temp->key = _key;
@@ -96,46 +93,66 @@ inline void List<data, keytype>::InsertAfter(List<data, keytype>* head, const ke
 		temp->next = tempHead->next;
 		tempHead->next = temp;
 	}
+	else
+	{
+		std::cout << "Node with such key does not exist.\n";
+	}
 
 }
 
 template<class data, class keytype>
-inline void List<data, keytype>::InsertBefore(List<data, keytype>* head, const keytype _before, const data _info, keytype _key)
+inline void List<data, keytype>::InsertBefore(List<data, keytype>** head, const keytype _before, const data _info, keytype _key)
 {
-	List<data, keytype>* tempHead = search(head, _before);
-	if (tempHead == nullptr)
+	List<data, keytype>* tempHead = search(*head, _before);
+	if (tempHead != nullptr)
 	{
-		this->InsertBegining(&head, _info, _key);
+		if (tempHead->key == (*head)->key)
+		{
+			this->InsertBegining(head, _info, _key);
+		}
+		else
+		{
+			List<data, keytype>* tempNode = new List<data, keytype>(*this);
+			tempNode->info = _info;
+			tempNode->key = _key;
+			tempNode->next = tempHead->next;
+			tempHead->next = tempNode;
+
+			data switchData = tempHead->info;
+			tempHead->info = tempNode->info;
+			tempNode->info = switchData;
+
+			keytype switchKey = tempHead->key;
+			tempHead->key = tempNode->key;
+			tempNode->key = switchKey;
+		}
 	}
 	else
 	{
-		List<data, keytype>* temp = new List<data, keytype>(*this);
-		temp->info = _info;
-		temp->key = _key;
-		temp->next = tempHead->next;
-		tempHead->next = temp;
-
-		data switchData = tempHead->info;
-		tempHead->info = temp->info;
-		temp->info = switchData;
-
-		keytype switchKey = tempHead->key;
-		tempHead->key = temp->key;
-		temp->key = switchKey;
+		std::cout << "No node with such key found.\n";
 	}
 }
 
 template<class data, class keytype>
-inline void List<data, keytype>::DeleteNode(List<data, keytype>* head, const keytype _delete)
+inline void List<data, keytype>::DeleteNode(List<data, keytype>** head, const keytype _delete)
 {
-	List<data, keytype>* toDelete = head;
-	while (toDelete->next != nullptr && toDelete->next->key != _delete)
+	if ((*head)->key == _delete)
 	{
-		toDelete = toDelete->next;
+		List<data, keytype>* save = *head;
+		*head=(*head)->next;
+		free(save);
 	}
-	List<data, keytype>* save = toDelete->next->next;
-	//delete toDelete->next;
-	toDelete->next = save;
+	else
+	{
+		List<data, keytype>* toDelete = *head;
+		while (toDelete->next != nullptr && toDelete->next->key != _delete)
+		{
+			toDelete = toDelete->next;
+		}
+		List<data, keytype>* save = toDelete->next;
+		toDelete->next = toDelete->next->next;
+		free(save);
+	}
 }
 
 template<class data, class keytype>
@@ -149,7 +166,7 @@ inline List<data, keytype>* List<data, keytype>::search(List<data, keytype>* hea
 		}
 		head = head->next;
 	}
-	std::cout << "Element not found\n";
+	return NULL;
 }
 
 template<class data, class keytype>
