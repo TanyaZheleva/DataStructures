@@ -17,7 +17,7 @@ public:
 	void InsertAfter(List<data, keytype>** head, const keytype _after, const data _info, const keytype _key);
 	void InsertBefore(List<data, keytype>** head, const keytype _before, const data _info, keytype _key);
 	void DeleteNode(List<data, keytype>** head, const keytype _delete);
-
+	void DeleteSpaceOfNodes(List<data, keytype>** head, const keytype  _first, const keytype _last);
 	List* search(List<data, keytype>* head, const keytype _find);
 	void printList(List<data, keytype>* head);
 
@@ -139,9 +139,10 @@ inline void List<data, keytype>::DeleteNode(List<data, keytype>** head, const ke
 	if ((*head)->key == _delete)
 	{
 		List<data, keytype>* save = *head;
-		*head=(*head)->next;
+		*head = (*head)->next;
 		free(save);
 	}
+
 	else
 	{
 		List<data, keytype>* toDelete = *head;
@@ -149,10 +150,58 @@ inline void List<data, keytype>::DeleteNode(List<data, keytype>** head, const ke
 		{
 			toDelete = toDelete->next;
 		}
-		List<data, keytype>* save = toDelete->next;
-		toDelete->next = toDelete->next->next;
-		free(save);
+
+		if (toDelete->next != nullptr)
+		{
+			List<data, keytype>* save = toDelete->next;
+			toDelete->next = toDelete->next->next;
+			free(save);
+		}
+		else
+		{
+			std::cout << "No node with such key found.\n";
+		}
 	}
+}
+
+template<class data, class keytype>
+inline void List<data, keytype>::DeleteSpaceOfNodes(List<data, keytype>** head, const keytype _first, const keytype _last)
+{
+
+	if ((*head)->key == _first)
+	{
+		while ((*head)->key != _last)
+		{
+			List<data, keytype>* save = *head;
+			*head = (*head)->next;
+			free(save);
+		}
+	}
+
+	else
+	{
+		List<data, keytype>* toDelete = *head;
+		while (toDelete->next != nullptr && toDelete->next->key != _first)
+		{
+			toDelete = toDelete->next;
+		}
+
+		if (toDelete->next != nullptr)
+		{
+			while (toDelete->next != nullptr && toDelete->next->key != _last)
+			{
+				List<data, keytype>* save = toDelete->next;
+				toDelete->next = toDelete->next->next;
+				free(save);
+			}
+		}
+		else
+		{
+			std::cout << "No starting node found. Invalid stating key.\n";
+			return;
+		}
+	}
+	DeleteNode(head, _last);
 }
 
 template<class data, class keytype>
@@ -172,9 +221,16 @@ inline List<data, keytype>* List<data, keytype>::search(List<data, keytype>* hea
 template<class data, class keytype>
 inline void List<data, keytype>::printList(List<data, keytype>* head)
 {
-	while (head != nullptr)
+	if (head == nullptr)
 	{
-		std::cout << "data: " << head->info << " " << "key: " << head->key << "\n";
-		head = head->next;
+		std::cout << "Empty List.\n";
+	}
+	else
+	{
+		while (head != nullptr)
+		{
+			std::cout << "data: " << head->info << " " << "key: " << head->key << "\n";
+			head = head->next;
+		}
 	}
 }
