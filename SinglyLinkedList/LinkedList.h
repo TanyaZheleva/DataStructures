@@ -18,6 +18,8 @@ public:
 	void InsertBefore(List<data, keytype>** head, const keytype _before, const data _info, keytype _key);
 	void DeleteNode(List<data, keytype>** head, const keytype _delete);
 	void DeleteSpaceOfNodes(List<data, keytype>** head, const keytype  _first, const keytype _last);
+
+	bool verifyKey(List<data, keytype>* head, const keytype _key);
 	List* search(List<data, keytype>* head, const keytype _find);
 	void printList(List<data, keytype>* head);
 
@@ -186,7 +188,7 @@ inline void List<data, keytype>::DeleteSpaceOfNodes(List<data, keytype>** head, 
 			toDelete = toDelete->next;
 		}
 
-		if (toDelete->next != nullptr)
+		if (toDelete->next != nullptr && verifyKey(toDelete->next, _last) == true)
 		{
 			while (toDelete->next != nullptr && toDelete->next->key != _last)
 			{
@@ -197,11 +199,25 @@ inline void List<data, keytype>::DeleteSpaceOfNodes(List<data, keytype>** head, 
 		}
 		else
 		{
-			std::cout << "No starting node found. Invalid stating key.\n";
+			std::cout << "One or more invalid keys.\n";
 			return;
 		}
 	}
 	DeleteNode(head, _last);
+}
+
+template<class data, class keytype>
+inline bool List<data, keytype>::verifyKey(List<data, keytype>* head, const keytype _key)
+{
+	while (head != nullptr)
+	{
+		if (head->key == _key)
+		{
+			return true;
+		}
+		head = head->next;
+	}
+	return false;
 }
 
 template<class data, class keytype>
