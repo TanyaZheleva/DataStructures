@@ -97,9 +97,7 @@ inline unsigned HashMap<datatype, keytype>::aditiveHashing(keytype _key)
 		return result % size;
 	}
 	else
-	{
-		std::cout << "Not possible to use this function on this keytype\n";
-	}
+		return (unsigned)-1;
 }
 
 template<class datatype, class keytype>
@@ -117,7 +115,17 @@ template<class datatype, class keytype>
 inline void HashMap<datatype, keytype>::put(Element<datatype, keytype>& _add)
 {
 	keytype _index = _add.getKey();
-	//add hashing function
+
+	if ((std::is_same_v<keytype, char*>)==false)
+	{
+		_index = doubleHashing(_index);
+	}
+	
+	else
+	{
+		_index = aditiveHashing(_index);
+	}
+
 	if (_index >= 0 && _index < size)
 	{
 		if (slots[_index] == nullptr)
@@ -152,3 +160,25 @@ inline void HashMap<datatype, keytype>::remove(keytype _key)
 		slots[_key] = nullptr;
 	}
 }
+
+//template<class keytype>
+//class a
+//{
+//public:
+//	void getKey();
+//	keytype key;
+//};
+//
+//template<class keytype>
+//inline void a<keytype>::getKey()
+//{
+//	if ((std::is_same_v<keytype, char*>))
+//	{
+//		std::cout << "true";
+//		
+//	}
+//	else
+//	{
+//		std::cout << "false";
+//	}
+//}
