@@ -32,8 +32,10 @@ public:
 	~HashMap();
 
 	//hashing functions
+	unsigned division(keytype _key);
+	unsigned knutMultiplicative(keytype _key);
 	unsigned aditiveHashing(keytype _key);
-	void Pearson(keytype _key);
+	unsigned doubleHashing(keytype _key);
 
 	//basic operations with a hash map
 	void put(Element<datatype, keytype>& _add);
@@ -66,6 +68,21 @@ inline HashMap<datatype, keytype>::~HashMap()
 }
 
 template<class datatype, class keytype>
+inline unsigned HashMap<datatype, keytype>::division(keytype _key)
+{
+	return _key % size;
+}
+
+template<class datatype, class keytype>
+inline unsigned HashMap<datatype, keytype>::knutMultiplicative(keytype _key)
+{
+	const double knut = 0.618033;
+	double  newKey = double(_key * knut) - (int)(_key * knut);
+	return (unsigned ) (size * newKey);
+
+}
+
+template<class datatype, class keytype>
 inline unsigned HashMap<datatype, keytype>::aditiveHashing(keytype _key)
 {
 	if (std::is_same_v<keytype, char*>)
@@ -83,6 +100,17 @@ inline unsigned HashMap<datatype, keytype>::aditiveHashing(keytype _key)
 	{
 		std::cout << "Not possible to use this function on this keytype\n";
 	}
+}
+
+template<class datatype, class keytype>
+inline unsigned HashMap<datatype, keytype>::doubleHashing(keytype _key)
+{
+	unsigned newKey = division(_key);
+	if (slots[newKey] != nullptr)
+	{
+	newKey = knutMultiplicative(newKey);
+	}
+	return newKey;
 }
 
 template<class datatype, class keytype>
