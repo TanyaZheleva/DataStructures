@@ -118,7 +118,7 @@ inline void BST<datatype, keytype>::removeNode(BST<datatype, keytype>** head, ke
 				{
 					*head = (*head)->left;
 				}
-				else 
+				else
 				{
 					*head = (*head)->right;
 				}
@@ -149,19 +149,19 @@ inline datatype BST<datatype, keytype>::search(BST<datatype, keytype>** head, ke
 	{
 		search(&((*head)->right), _key);
 	}
-	
+
 }
 
 template<class datatype, class keytype>
 inline void BST<datatype, keytype>::printTree(BST<datatype, keytype>** head)
 {
-		if(*head==nullptr)
-		{
-			return;
-		}
-		std::cout << (*head)->key << '\n';
-		printTree(&(*head)->left);
-		printTree(&(*head)->right);
+	if (*head == nullptr)
+	{
+		return;
+	}
+	std::cout << (*head)->key << '\n';
+	printTree(&(*head)->left);
+	printTree(&(*head)->right);
 }
 
 template<class datatype, class keytype>
