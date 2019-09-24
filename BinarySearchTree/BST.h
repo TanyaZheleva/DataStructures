@@ -19,7 +19,8 @@ public:
 	datatype search(BST<datatype, keytype>** head, keytype _key);
 	void printTree(BST<datatype, keytype>** head);
 	BST<datatype, keytype>* findMin(BST<datatype, keytype>* head);
-//private:
+
+private:
 	keytype key;
 	datatype data;
 	BST* left;
