@@ -16,9 +16,12 @@ public:
 
 	void addNode(BST<datatype, keytype>** head, keytype _key, datatype _data);
 	void removeNode(BST<datatype, keytype>** head, keytype _key);
-	datatype search(BST<datatype, keytype>** head, keytype _key);
+	BST<datatype, keytype>* search(BST<datatype, keytype>** head, keytype _key);
 	void printTree(BST<datatype, keytype>** head);
+	BST<datatype, keytype>* findFloor(BST<datatype, keytype>** head, keytype _find);
+	BST<datatype, keytype>* findCeiling(BST<datatype, keytype>** head, keytype _find);
 	BST<datatype, keytype>* findMin(BST<datatype, keytype>* head);
+	BST<datatype, keytype>* findMax(BST<datatype, keytype>* head);
 
 private:
 	keytype key;
@@ -129,17 +132,17 @@ inline void BST<datatype, keytype>::removeNode(BST<datatype, keytype>** head, ke
 }
 
 template<class datatype, class keytype>
-inline datatype BST<datatype, keytype>::search(BST<datatype, keytype>** head, keytype _key)
+inline BST<datatype, keytype>* BST<datatype, keytype>::search(BST<datatype, keytype>** head, keytype _key)
 {
 	if (*head == nullptr)
 	{
 		std::cout << "Node with such key does not exist\n";
-		return NULL;
+		return nullptr;
 	}
 
 	if ((*head)->key == _key)
 	{
-		return (*head)->data;
+		return *head;
 	}
 	else if ((*head)->key > _key)
 	{
@@ -149,7 +152,6 @@ inline datatype BST<datatype, keytype>::search(BST<datatype, keytype>** head, ke
 	{
 		search(&((*head)->right), _key);
 	}
-
 }
 
 template<class datatype, class keytype>
@@ -165,11 +167,89 @@ inline void BST<datatype, keytype>::printTree(BST<datatype, keytype>** head)
 }
 
 template<class datatype, class keytype>
+inline BST<datatype, keytype>* BST<datatype, keytype>::findFloor(BST<datatype, keytype>** head, keytype _find)
+{
+	BST<datatype, keytype>* keep = this->findMin(*head);
+	if (keep->key <= _find)
+	{
+		while (*head != nullptr)
+		{
+			if ((*head)->key == _find)
+			{
+				return *head;
+			}
+			else if ((*head)->key < _find)
+			{
+				if ((*head)->key > keep->key)
+				{
+					keep = *head;
+				}
+				*head = (*head)->right;
+			}
+			else if ((*head)->key > _find)
+			{
+				*head = (*head)->left;
+			}
+		}
+	}
+	else
+	{
+		std::cout << "Fail! Key is higher than the highest key in the tree.\n";
+		return nullptr;
+	}
+	return keep;
+}
+
+template<class datatype, class keytype>
+inline BST<datatype, keytype>* BST<datatype, keytype>::findCeiling(BST<datatype, keytype>** head, keytype _find)
+{
+	BST<datatype, keytype>* keep = this->findMax(*head);
+	if (keep->key >= _find)
+	{
+		while (*head != nullptr)
+		{
+			if ((*head)->key == _find)
+			{
+				return *head;
+			}
+			else if ((*head)->key < _find)
+			{
+				*head = (*head)->right;
+			}
+			else if ((*head)->key > _find)
+			{
+				if ((*head)->key < keep->key)
+				{
+					keep = *head;
+				}
+				*head = (*head)->left;
+			}
+		}
+	}
+	else
+	{
+		std::cout << "Fail! Key is higher than the highest key in the tree.\n";
+		return nullptr;
+	}
+	return keep;
+}
+
+template<class datatype, class keytype>
 inline BST<datatype, keytype>* BST<datatype, keytype>::findMin(BST<datatype, keytype>* head)
 {
 	while (head->left != nullptr)
 	{
 		head = head->left;
+	}
+	return head;
+}
+
+template<class datatype, class keytype>
+inline BST<datatype, keytype>* BST<datatype, keytype>::findMax(BST<datatype, keytype>* head)
+{
+	while (head->right != nullptr)
+	{
+		head = head->right;
 	}
 	return head;
 }
