@@ -194,7 +194,7 @@ inline BST<datatype, keytype>* BST<datatype, keytype>::findFloor(BST<datatype, k
 	}
 	else
 	{
-		std::cout << "Fail! Key is higher than the highest key in the tree.\n";
+		std::cout << "Fail! Key is lower than the lowest key in the tree.\n";
 		return nullptr;
 	}
 	return keep;
