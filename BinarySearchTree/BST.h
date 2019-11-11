@@ -1,4 +1,3 @@
-#pragma once
 #include <iostream>
 
 template<class datatype, class keytype>
@@ -16,8 +15,8 @@ public:
 
 	void addNode(BST<datatype, keytype>** head, keytype _key, datatype _data);
 	void removeNode(BST<datatype, keytype>** head, keytype _key);
-	BST<datatype, keytype>* search(BST<datatype, keytype>** head, keytype _key);
-	void printTree(BST<datatype, keytype>** head);
+	BST<datatype, keytype>* search(BST<datatype, keytype>* head, keytype _key);
+	void printTree(BST<datatype, keytype>* head);
 	BST<datatype, keytype>* findFloor(BST<datatype, keytype>** head, keytype _find);
 	BST<datatype, keytype>* findCeiling(BST<datatype, keytype>** head, keytype _find);
 	BST<datatype, keytype>* findMin(BST<datatype, keytype>* head);
@@ -132,38 +131,38 @@ inline void BST<datatype, keytype>::removeNode(BST<datatype, keytype>** head, ke
 }
 
 template<class datatype, class keytype>
-inline BST<datatype, keytype>* BST<datatype, keytype>::search(BST<datatype, keytype>** head, keytype _key)
+inline BST<datatype, keytype>* BST<datatype, keytype>::search(BST<datatype, keytype>* head, keytype _key)
 {
-	if (*head == nullptr)
+	if (head == nullptr)
 	{
 		std::cout << "Node with such key does not exist\n";
 		return nullptr;
 	}
 
-	if ((*head)->key == _key)
+	if (head->key == _key)
 	{
-		return *head;
+		return head;
 	}
-	else if ((*head)->key > _key)
+	else if (head->key > _key)
 	{
-		search(&((*head)->left), _key);
+		search(head->left, _key);
 	}
-	else if ((*head)->key < _key)
+	else if (head->key < _key)
 	{
-		search(&((*head)->right), _key);
+		search(head->right, _key);
 	}
 }
 
 template<class datatype, class keytype>
-inline void BST<datatype, keytype>::printTree(BST<datatype, keytype>** head)
+inline void BST<datatype, keytype>::printTree(BST<datatype, keytype>* head)
 {
-	if (*head == nullptr)
+	if (head == nullptr)
 	{
 		return;
 	}
-	std::cout << (*head)->key << '\n';
-	printTree(&(*head)->left);
-	printTree(&(*head)->right);
+	std::cout << head->key << '\n';
+	printTree(head->left);
+	printTree(head->right);
 }
 
 template<class datatype, class keytype>
