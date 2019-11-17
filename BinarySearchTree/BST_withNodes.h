@@ -94,6 +94,35 @@ node* lca(node* head, int v1, int v2)
 	return head;
 }
 
+node* lowerBound(node* head, int value)
+{
+	if (head == nullptr)
+	{
+		return nullptr;
+	}
+	if (head->data == value)
+	{
+		return head;
+	}
+	if (head->data < value)
+	{
+		return lowerBound(head->right, value);
+	}
+	else
+	{
+		node* temp = lowerBound(head->left, value);
+		if (temp != nullptr)
+		{
+			return temp;
+		}
+		else
+		{
+			return head;
+		}
+	}
+
+}
+
 node* remove(node* head, int value)
 {
 	if (head == nullptr)
