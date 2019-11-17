@@ -190,6 +190,24 @@ int getHeightLeaves(node* head)
 	}
 }
 
+ bool isMirror(struct Node *head1, struct Node *head2) 
+    { 
+         if (head1 == NULL && head2 == NULL) 
+         {
+             return true; 
+         }
+        if (head1 && head2 && head1->key == head2->key) 
+         { return isMirror(head1->left, head2->right) && 
+               isMirror(head1->right, head2->left);
+         }
+        return false;      
+    }
+    
+  bool isSymmetric(TreeNode* head) 
+  {
+      return isMirror(head, head);
+  }
+
 void print(node* head)
 {
 	if (head != nullptr)
