@@ -189,6 +189,71 @@ int KthSmallestElement(node* root, int k)
 	return sorted[k - 1];
 }
 
+node* findFloor(node* root, int _find)
+{
+	node* keep = minElement(root);
+	if (keep->data <= _find)
+	{
+		while (root != nullptr)
+		{
+			if (root->data == _find)
+			{
+				return root;
+			}
+			else if (root->data < _find)
+			{
+				if (root->data > keep->data)
+				{
+					keep = root;
+				}
+				root = root->right;
+			}
+			else if (root->data > _find)
+			{
+				root = root->left;
+			}
+		}
+	}
+	else
+	{
+		return nullptr;
+	}
+	return keep;
+}
+
+node* findCeiling(node* root, int _find)
+{
+	node* keep = maxElement(root);
+
+	if (keep->data >= _find)
+	{
+		while (root != nullptr)
+		{
+			if (root->data == _find)
+			{
+				return root;
+			}
+			else if (root->data < _find)
+			{
+				root = root->right;
+			}
+			else if (root->data > _find)
+			{
+				if (root->data < keep->data)
+				{
+					keep = root;
+				}
+				root = root->left;
+			}
+		}
+	}
+	else
+	{
+		return nullptr;
+	}
+	return keep;
+}
+
 void print(node* root)
 {
 	if (root != nullptr)
