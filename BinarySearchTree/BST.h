@@ -254,6 +254,26 @@ node* findCeiling(node* root, int _find)
 	return keep;
 }
 
+bool isSymmetricHelp(node* lhs, node* rhs)
+{
+	if (!lhs && !rhs)	
+	{
+		return true;
+	}
+
+	if (!lhs || !rhs) 
+	{
+		return false;
+	}
+
+	return (lhs->data) == (rhs->data) && isSymmetricHelp(lhs->left, rhs->right) && isSymmetricHelp(lhs->right, rhs->left);
+}
+
+bool isSymmetric(node* root)
+{
+	return isSymmetricHelp(root, root);
+}
+
 void print(node* root)
 {
 	if (root != nullptr)
