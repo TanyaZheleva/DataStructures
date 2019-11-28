@@ -1,4 +1,5 @@
 #pragma once
+#pragma once
 #include <iostream>
 
 struct node
@@ -16,6 +17,8 @@ public:
 	list();
 	void add(int _data);
 	void addAtPosition(int data, int position);
+	void addAfter(int _after, int  _key);
+	void addBefore(int _beforeKey, int _key);
 	void deleteAtPosition(int position);
 	void DeleteSpaceOfNodes(int  _first, int _last);
 	bool search(int num);
@@ -39,12 +42,14 @@ inline void list::add(int _data)
 		head = temp;
 		tail = temp;
 		temp->next = nullptr;
+		temp->previous = nullptr;
 	}
 	else if (head != nullptr)
 	{
 		tail->next = temp;
-		tail = temp;
 		temp->next = nullptr;
+		temp->previous = tail;
+		tail = temp;
 	}
 }
 
@@ -60,6 +65,7 @@ inline void list::addAtPosition(int data, int position)
 	if (temphead != nullptr)
 	{
 		temp->next = temphead->next;
+		temp->previous = temphead->previous;
 		temphead->next = temp;
 
 		int p = temp->data;
@@ -68,27 +74,98 @@ inline void list::addAtPosition(int data, int position)
 	}
 }
 
-inline void list::deleteAtPosition(int position)
+inline void list::addAfter(int _after, int  _key)
 {
-	if (position == 0)
+	node* tempHead = head;
+	while (tempHead != nullptr && tempHead->data != _after)
 	{
-		node* save = head;
-		head = head->next;
-		free(save);
+		tempHead = tempHead->next;
 	}
 
+	if (tempHead != nullptr)
+	{
+		node* tempNode = new node(_key);
+		if (tempHead->next != nullptr)
+		{
+			tempHead->next->previous = tempNode;
+		}
+		tempNode->next = tempHead->next;
+		tempHead->next = tempNode;
+		tempNode->previous = tempHead;
+	}
 	else
 	{
-		node* temp = head;
-		while (position - 1 > 0)
-		{
-			temp = temp->next;
-			position--;
-		}
-		node* save = temp->next;
-		temp->next = temp->next->next;
-		free(save);
+		std::cout << "Doesn't exist a node with such key.\n";
 	}
+}
+
+
+inline void list::addBefore(int _before, int _key)
+{
+	node* tempHead = head;
+	while (tempHead != nullptr && tempHead->data != _before)
+	{
+		tempHead = tempHead->next;
+	}
+	if (tempHead->data == head->data)
+	{
+		this->add(_key);
+	}
+	else if (tempHead != nullptr)
+	{
+		node* tempNode = new node(_key);
+		tempNode->next = tempHead;
+		tempNode->previous = tempHead->previous;
+		if (tempHead->previous != nullptr)
+		{
+			tempHead->previous->next = tempNode;
+		}
+		tempHead->previous = tempNode;
+	}
+	else if (tempHead == nullptr)
+	{
+		std::cout << "Node with such key doesn't exist.\n";
+	}
+}
+
+
+inline void list::deleteAtPosition(int position)
+{
+	node* tempHead = head;
+	while (tempHead != nullptr && tempHead->data != position)
+	{
+		tempHead = tempHead->next;
+	}
+	if (tempHead != nullptr)
+	{
+		if (tempHead->previous != nullptr)
+		{
+			tempHead->previous->next = tempHead->next;
+		}
+
+		if (tempHead->next != nullptr)
+		{
+			if (tempHead->previous != nullptr)
+			{
+				tempHead->next = tempHead->previous;
+			}
+			else //deleting first element of list
+			{
+				head = tempHead->next;
+				tempHead->next->previous = tempHead->previous;
+			}
+		}
+		if (head == tempHead && tempHead->next == nullptr)
+		{
+			head = nullptr;
+		}
+		free(tempHead);
+	}
+	else
+	{
+		std::cout << "No such node found.\n";
+	}
+
 }
 
 inline void list::DeleteSpaceOfNodes(int _first, int _last)
@@ -127,7 +204,7 @@ inline void list::DeleteSpaceOfNodes(int _first, int _last)
 			tempNode = tempNode->next;
 			free(save);
 		}
-		this->DeleteNode(head, _last);
+		this->deleteAtPosition(_last);
 	}
 	return;
 }
