@@ -1,11 +1,13 @@
+#pragma once
 #include <iostream>
 
 struct node
 {
 	int data;
 	node* next;
+	node* previous;
 
-	node(int _data) { data = _data; next = nullptr; }
+	node(int _data) { data = _data; next = nullptr; previous = nullptr; }
 };
 
 class list
@@ -91,40 +93,43 @@ inline void list::deleteAtPosition(int position)
 
 inline void list::DeleteSpaceOfNodes(int _first, int _last)
 {
-	if (head->data == _first)
+	node* tempNode = head;
+	while (tempNode != nullptr && tempNode->data != _first)
 	{
-		while (head->data != _last)
+		tempNode = tempNode->next;
+	}
+	if (tempNode == nullptr)
+	{
+		return;
+	}
+	if (search(_last) == true)
+	{
+		while (tempNode != nullptr && tempNode->data != _last)
 		{
-			node* save = head;
-			head = head->next;
+			node* save = tempNode;
+			if (tempNode->previous != nullptr)
+			{
+				tempNode->previous->next = tempNode->next;
+			}
+
+			if (tempNode->next != nullptr)
+			{
+				if (tempNode->previous != nullptr)
+				{
+					tempNode->next->previous = tempNode->previous;
+				}
+				else
+				{
+					head = tempNode->next;
+					tempNode->next->previous = tempNode->previous;
+				}
+			}
+			tempNode = tempNode->next;
 			free(save);
 		}
+		this->DeleteNode(head, _last);
 	}
-
-	else
-	{
-		node* toDelete = head;
-		while (toDelete->next != nullptr && toDelete->next->data != _first)
-		{
-			toDelete = toDelete->next;
-		}
-
-		if (toDelete->next != nullptr && verifyData(toDelete->next, _last) == true)
-		{
-			while (toDelete->next != nullptr && toDelete->next->data != _last)
-			{
-				node* save = toDelete->next;
-				toDelete->next = toDelete->next->next;
-				free(save);
-			}
-		}
-		else
-		{
-			std::cout << "One or more invalid keys.\n";
-			return;
-		}
-	}
-	deleteAtPosition(_last);
+	return;
 }
 
 inline bool list::search(int num)
