@@ -1,198 +1,119 @@
-#pragma once
 #include <iostream>
-#include <iomanip>
 
-template<class data, class keytype>
-class List
+struct node
 {
-public:
-	List();
-	List(const data _info, const keytype _key);
-	List(const data _info, const keytype _key, const List<data, keytype>& _next);
-	List(const List<data, keytype>& old);
-	List& operator= (const List<data, keytype>& rhs);
-	~List();
+	int data;
+	node* next;
 
-	void InsertBegining(List<data, keytype>** head, const data _info, const keytype _key);
-	void InsertAfter(List<data, keytype>** head, const keytype _after, const data _info, const keytype _key);
-	void InsertBefore(List<data, keytype>** head, const keytype _before, const data _info, keytype _key);
-	void DeleteNode(List<data, keytype>** head, const keytype _delete);
-	void DeleteSpaceOfNodes(List<data, keytype>** head, const keytype  _first, const keytype _last);
-
-	bool verifyKey(List<data, keytype>* head, const keytype _key);
-	List* search(List<data, keytype>* head, const keytype _find);
-	void printList(List<data, keytype>* head);
-
-private:
-	data info;
-	keytype key;
-	List* next;
+	node(int _data) { data = _data; next = nullptr; }
 };
 
-template<class data, class keytype>
-inline List<data, keytype>::List()
+class list
 {
-	this->next = nullptr;
-}
+public:
+	list();
+	void add(int _data);
+	void addAtPosition(int data, int position);
+	void deleteAtPosition(int position);
+	void DeleteSpaceOfNodes(int  _first, int _last);
+	bool search(int num);
+	bool emptry()const;
+	void print();
+	void reverse();
+private:
+	bool verifyData(node* head, int data);
+	node* head;
+	node* tail;
+};
 
-template<class data, class keytype>
-inline List<data, keytype>::List(const data _info, const keytype _key) :info(_info), key(_key)
-{
-	this->next = nullptr;
-}
 
-template<class data, class keytype>
-inline List<data, keytype>::List(const data _info, const keytype _key, const List<data, keytype>& _next) :info(_info), key(_key)
-{
-	this->next = new List<data, keytype>(_next);
-}
+inline list::list() { head = nullptr; tail = nullptr; }
 
-template<class data, class keytype>
-inline List<data, keytype>::List(const List<data, keytype>& old)
+inline void list::add(int _data)
 {
-	this->info = old.info;
-	this->key = old.key;
-	this->next = nullptr;
-}
-
-template<class data, class keytype>
-inline List<data, keytype>& List<data, keytype>::operator=(const List<data, keytype>& rhs)
-{
-	if (this != &rhs)
+	node* temp = new node{ _data };
+	if (head == nullptr && tail == nullptr)
 	{
-		this->info = rhs.info;
-		this->key = rhs.key;
-		this->next = nullptr;
+		head = temp;
+		tail = temp;
+		temp->next = nullptr;
 	}
-	return *this;
-}
-
-template<class data, class keytype>
-inline List<data, keytype>::~List()
-{
-	delete this->next;
-}
-
-template<class data, class keytype>
-inline void List<data, keytype>::InsertBegining(List<data, keytype>** head, const data _info, const keytype _key)
-{
-	List <data, keytype>* temp = new List<data, keytype>(*this);
-	temp->key = _key;
-	temp->info = _info;
-	temp->next = *head;
-	*head = temp;
-}
-
-template<class data, class keytype>
-inline void List<data, keytype>::InsertAfter(List<data, keytype>** head, const keytype _after, const data _info, const keytype _key)
-{
-	List<data, keytype>* tempHead = search(*head, _after);
-	if (tempHead != nullptr)
+	else if (head != nullptr)
 	{
-		List<data, keytype>* temp = new List<data, keytype>(*this);
-		temp->key = _key;
-		temp->info = _info;
-		temp->next = tempHead->next;
-		tempHead->next = temp;
-	}
-	else
-	{
-		std::cout << "Node with such key does not exist.\n";
-	}
-
-}
-
-template<class data, class keytype>
-inline void List<data, keytype>::InsertBefore(List<data, keytype>** head, const keytype _before, const data _info, keytype _key)
-{
-	List<data, keytype>* tempHead = search(*head, _before);
-	if (tempHead != nullptr)
-	{
-		if (tempHead->key == (*head)->key)
-		{
-			this->InsertBegining(head, _info, _key);
-		}
-		else
-		{
-			List<data, keytype>* tempNode = new List<data, keytype>(*this);
-			tempNode->info = _info;
-			tempNode->key = _key;
-			tempNode->next = tempHead->next;
-			tempHead->next = tempNode;
-
-			data switchData = tempHead->info;
-			tempHead->info = tempNode->info;
-			tempNode->info = switchData;
-
-			keytype switchKey = tempHead->key;
-			tempHead->key = tempNode->key;
-			tempNode->key = switchKey;
-		}
-	}
-	else
-	{
-		std::cout << "No node with such key found.\n";
+		tail->next = temp;
+		tail = temp;
+		temp->next = nullptr;
 	}
 }
 
-template<class data, class keytype>
-inline void List<data, keytype>::DeleteNode(List<data, keytype>** head, const keytype _delete)
+inline void list::addAtPosition(int data, int position)
 {
-	if ((*head)->key == _delete)
+	node* temp = new node{ data };
+	node* temphead = head;
+	while (position > 0 && temphead != nullptr)
 	{
-		List<data, keytype>* save = *head;
-		*head = (*head)->next;
+		temphead = temphead->next;
+		position--;
+	}
+	if (temphead != nullptr)
+	{
+		temp->next = temphead->next;
+		temphead->next = temp;
+
+		int p = temp->data;
+		temp->data = temphead->data;
+		temphead->data = p;
+	}
+}
+
+inline void list::deleteAtPosition(int position)
+{
+	if (position == 0)
+	{
+		node* save = head;
+		head = head->next;
 		free(save);
 	}
 
 	else
 	{
-		List<data, keytype>* toDelete = *head;
-		while (toDelete->next != nullptr && toDelete->next->key != _delete)
+		node* temp = head;
+		while (position - 1 > 0)
 		{
-			toDelete = toDelete->next;
+			temp = temp->next;
+			position--;
 		}
-
-		if (toDelete->next != nullptr)
-		{
-			List<data, keytype>* save = toDelete->next;
-			toDelete->next = toDelete->next->next;
-			free(save);
-		}
-		else
-		{
-			std::cout << "No node with such key found.\n";
-		}
+		node* save = temp->next;
+		temp->next = temp->next->next;
+		free(save);
 	}
 }
 
-template<class data, class keytype>
-inline void List<data, keytype>::DeleteSpaceOfNodes(List<data, keytype>** head, const keytype _first, const keytype _last)
+inline void list::DeleteSpaceOfNodes(int _first, int _last)
 {
-
-	if ((*head)->key == _first)
+	if (head->data == _first)
 	{
-		while ((*head)->key != _last)
+		while (head->data != _last)
 		{
-			List<data, keytype>* save = *head;
-			*head = (*head)->next;
+			node* save = head;
+			head = head->next;
 			free(save);
 		}
 	}
 
 	else
 	{
-		List<data, keytype>* toDelete = *head;
-		while (toDelete->next != nullptr && toDelete->next->key != _first)
+		node* toDelete = head;
+		while (toDelete->next != nullptr && toDelete->next->data != _first)
 		{
 			toDelete = toDelete->next;
 		}
 
-		if (toDelete->next != nullptr && verifyKey(toDelete->next, _last) == true)
+		if (toDelete->next != nullptr && verifyData(toDelete->next, _last) == true)
 		{
-			while (toDelete->next != nullptr && toDelete->next->key != _last)
+			while (toDelete->next != nullptr && toDelete->next->data != _last)
 			{
-				List<data, keytype>* save = toDelete->next;
+				node* save = toDelete->next;
 				toDelete->next = toDelete->next->next;
 				free(save);
 			}
@@ -203,50 +124,72 @@ inline void List<data, keytype>::DeleteSpaceOfNodes(List<data, keytype>** head, 
 			return;
 		}
 	}
-	DeleteNode(head, _last);
+	deleteAtPosition(_last);
 }
 
-template<class data, class keytype>
-inline bool List<data, keytype>::verifyKey(List<data, keytype>* head, const keytype _key)
+inline bool list::search(int num)
+{
+	node* temp = head;
+	while (temp != nullptr)
+	{
+		if (temp->data == num)
+		{
+			return true;
+		}
+		temp = temp->next;
+	}
+	return false;
+}
+
+inline bool list::emptry()const
+{
+	return head == nullptr ? true : false;
+}
+
+
+inline void list::print()
+{
+	node* temp = this->head;
+	while (temp != nullptr)
+	{
+		std::cout << temp->data << " ";
+
+		temp = temp->next;
+	}
+	std::cout << "\n";
+}
+inline void list::reverse()
+{
+	list a;
+	while (head != nullptr)
+	{
+		node* temp = new node{ head->data };
+		if (a.head == nullptr && a.tail == nullptr)
+		{
+			a.head = temp; a.tail = temp;
+		}
+		else
+		{
+			temp->next = a.head->next;
+			a.head->next = temp;
+			int t = temp->data;
+			temp->data = a.head->data;
+			a.head->data = t;
+		}
+		head = head->next;
+	}
+	this->head = a.head;
+}
+
+inline bool list::verifyData(node* head, int data)
 {
 	while (head != nullptr)
 	{
-		if (head->key == _key)
+		if (head->data == data)
 		{
 			return true;
 		}
 		head = head->next;
 	}
 	return false;
-}
-
-template<class data, class keytype>
-inline List<data, keytype>* List<data, keytype>::search(List<data, keytype>* head, const keytype _find)
-{
-	while (head != nullptr)
-	{
-		if (head->key == _find)
-		{
-			return head;
-		}
-		head = head->next;
-	}
-	return NULL;
-}
-
-template<class data, class keytype>
-inline void List<data, keytype>::printList(List<data, keytype>* head)
-{
-	if (head == nullptr)
-	{
-		std::cout << "Empty List.\n";
-	}
-	else
-	{
-		while (head != nullptr)
-		{
-			std::cout << "data: " << head->info << " " << "key: " << head->key << "\n";
-			head = head->next;
-		}
-	}
 }
