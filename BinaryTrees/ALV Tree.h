@@ -1,314 +1,299 @@
 #pragma once
 #include <iostream>
-#include <string>
-#include <iomanip>
 
 int max(int a, int b)
 {
 	return (a > b) ? a : b;
 }
 
-struct Node
+struct node
 {
-	double value;
+	int data;
 	int height;
-	Node* left;
-	Node* right;
+	node* left;
+	node* right;
 
-	Node(double value, Node* left, Node* right)
+	node(int a, node* l, node* r)
 	{
-		this->value = value;
-		this->left = left;
-		this->right = right;
-		this->height = 1;
+		data = a;
+		height = 1;
+		left = l;
+		right = r;
 	}
 };
 
-class AVLTree
-{
+class AVLTree {
+public:
+	AVLTree();
+	void add(int value);
+	void remove(int value);
+	bool contains(int value);
+	void print();
 private:
-	Node* root;
+	node* root;
 
-	bool containsRecursive(Node* current, double value)
+	int height(node* n);
+	int getBalance(node* n);
+	node* rightRotate(node* n);
+	node* leftRotate(node* n);
+	node* minNode(node* n);
+	node* insertNode(node* n, int value);
+	node* deleteNode(node* n, int value);
+	bool containsRecursive(node* n, int value);
+	void printRecursive(node* n);
+};
+
+inline AVLTree::AVLTree()
+{
+	root = nullptr;
+}
+
+inline void AVLTree::add(int value)
+{
+	if (contains(value) == true)
 	{
-		if (current == NULL)
-		{
-			return false;
-		}
+		std::cout << "This value already exists in the tree.\n";
+	}
+	else
+	{
+		root = insertNode(root, value);
+	}
+}
 
-		if (current->value == value)
-		{
-			return true;
-		}
+inline void AVLTree::remove(int value)
+{
+	if (root == nullptr)
+	{
+		std::cout << "The tree is empty.\n";
+	}
+	else if (contains(value) == false)
+	{
+		std::cout << "Node does not exist in the tree.\n";
+	}
+	else
+	{
+		root = deleteNode(root, value);
+	}
+}
 
-		if (value < current->value)
-		{
-			return containsRecursive(current->left, value);
-		}
-		else
-		{
-			return containsRecursive(current->right, value);
-		}
+inline bool AVLTree::contains(int value)
+{
+	if (root == nullptr)
+	{
+		return false;
+	}
+	return containsRecursive(root, value);
+}
+
+inline void AVLTree::print()
+{
+
+	if (root == nullptr)
+	{
+		return;
+	}
+	printRecursive(root);
+	std::cout << "\n";
+}
+
+inline int AVLTree::height(node* n)
+{
+	if (n == nullptr)
+	{
+		return 0;
+	}
+	return n->height;
+}
+
+inline int AVLTree::getBalance(node* n)
+{
+	return (height(n->left) - height(n->right));
+}
+
+inline node* AVLTree::rightRotate(node* n)
+{
+	node* x = n->left;
+	node* y = x->right;
+
+	x->right = n;
+	n->left = y;
+
+	n->height = max(height(n->left), height(n->right)) + 1;
+	x->height = max(height(x->left), height(x->right)) + 1;
+
+	return x;
+}
+
+inline node* AVLTree::leftRotate(node* n)
+{
+	node* x = n->right;
+	node* y = x->left;
+
+	x->left = n;
+	n->right = y;
+
+	n->height = max(height(n->left), height(n->right)) + 1;
+	x->height = max(height(x->left), height(x->right)) + 1;
+
+	return x;
+}
+
+inline node* AVLTree::minNode(node* n)
+{
+	if (n == nullptr)
+	{
+		return nullptr;
 	}
 
-	void printRecursive(Node* current)
+	node* temp = n;
+	while (temp->left != nullptr)
 	{
-		if (current == NULL)
-		{
-			return;
-		}
+		temp = temp->left;
+	}
+	return temp;
+}
 
-		printRecursive(current->left);
-		std::cout << current->value << " ";
-		printRecursive(current->right);
+inline node* AVLTree::insertNode(node* n, int value)
+{
+	if (n == nullptr)
+	{
+		return new node(value, nullptr, nullptr);
+	}
+	if (value < n->data)
+	{
+		n->left = insertNode(n->left, value);
+	}
+	if (value > n->data)
+	{
+		n->right = insertNode(n->right, value);
 	}
 
-	int height(Node* N)
+	n->height = max(height(n->left), height(n->right)) + 1;
+	int balance = getBalance(n);
+
+	//left left
+	if (balance > 1 && value < n->left->data)
 	{
-		if (N == NULL)
-			return 0;
-		return N->height;
+		return rightRotate(n);
 	}
-
-	int getBalance(Node* N)
+	//right right
+	if (balance<-1 && value>n->right->data)
 	{
-		if (N == NULL)
-			return 0;
-		return height(N->left) - height(N->right);
+		return leftRotate(n);
 	}
-
-	Node* rightRotate(Node* y)
+	//left right
+	if (balance > 1 && value > n->left->data)
 	{
-		Node* x = y->left;
-		Node* T2 = x->right;
-
-		//rotate  
-		x->right = y;
-		y->left = T2;
-
-		//update heights of nodes
-		y->height = max(height(y->left), height(y->right)) + 1;
-		x->height = max(height(x->left), height(x->right)) + 1;
-
-		return x;
+		n->left = leftRotate(n->left);
+		return rightRotate(n);
 	}
-
-	Node* leftRotate(Node* x)
+	//right lefft
+	if (balance < -1 && value < n->right->data)
 	{
-		Node* y = x->right;
-		Node* T2 = y->left;
-
-		y->left = x;
-		x->right = T2;
-
-		x->height = max(height(x->left), height(x->right)) + 1;
-		y->height = max(height(y->left), height(y->right)) + 1;
-
-		return y;
+		n->right = rightRotate(n->right);
+		return leftRotate(n);
 	}
+	return n;
+}
 
-	Node* minValueNode(Node* node)
+inline node* AVLTree::deleteNode(node* n, int value)
+{
+	if (n == nullptr)
 	{
-		Node* current = node;
-
-		while (current->left != NULL)
-		{
-			current = current->left;
-		}
-
-		return current;
+		return n;
 	}
-
-	Node* insertNode(Node* root, double value)
+	if (value < n->data)
 	{
-		//just insert in the tree
-		if (root == nullptr)
-		{
-			return new Node{ value,nullptr,nullptr };
-		}
-		if (value < root->value)
-		{
-			root->left = insertNode(root->left, value);
-		}
-		else if (value > root->value)
-		{
-			root->right = insertNode(root->right, value);
-		}
-
-		//update heights of nodes
-		root->height = 1 + max(height(root->left), height(root->right));
-
-		//get balance to check if it's unbalanced now
-		int balance = getBalance(root);
-
-		//left left case
-		if (balance > 1 && value < root->left->value)
-		{
-			return rightRotate(root);
-		}
-
-		//right right case
-		if (balance < -1 && value > root->right->value)
-		{
-			return leftRotate(root);
-		}
-
-		//left right case
-		if (balance > 1 && value > root->left->value)
-		{
-			root->left = leftRotate(root->left);
-			return rightRotate(root);
-		}
-
-		//right left case
-		if (balance < -1 && value < root->right->value)
-		{
-			root->right = rightRotate(root->right);
-			return leftRotate(root);
-		}
-
-		return root;
-
+		n->left = deleteNode(n->left, value);
 	}
-
-	Node* deleteNode(Node* root, double value)
+	else if (value > n->data)
 	{
-		//just delete node  
-		if (root == NULL)
-			return root;
-
-		if (value < root->value)
-			root->left = deleteNode(root->left, value);
-
-		else if (value > root->value)
-			root->right = deleteNode(root->right, value);
-
-		else if (root->value == value)
+		n->right = deleteNode(n->right, value);
+	}
+	else if (value == n->data)
+	{
+		if (n->left == nullptr || n->right == nullptr)
 		{
-			if (root->left == nullptr || root->right == nullptr)
+			node* temp = n->left ? n->left : n->right;
+			if (temp == nullptr)
 			{
-				Node* temp = root->left ? root->left : root->right;
-				if (temp == nullptr)
-				{
-					temp = root;
-					root = nullptr;
-				}
-				else
-				{
-					*root = *temp;
-				}
-				free(temp);
+				temp = n;
+				n = nullptr;
 			}
 			else
 			{
-				Node* temp = minValueNode(root->right);
-				root->value = temp->value;
-				root->right = deleteNode(root->right, temp->value);
+				*n = *temp;
 			}
-		}
-
-		//if empty now
-		if (root == nullptr)
-		{
-			return root;
-		}
-
-		//update heights
-		root->height = 1 + max(height(root->left), height(root->right));
-
-		//get balance to check if it's unbalanced 
-		int balance = getBalance(root);
-
-		//left left case
-		if (balance > 1 && getBalance(root->left) >= 0)
-		{
-			return rightRotate(root);
-		}
-
-		//right right case 
-		if (balance < -1 && getBalance(root->right) <= 0)
-		{
-			return leftRotate(root);
-		}
-
-		//left right case  
-		if (balance > 1 && getBalance(root->left) < 0)
-		{
-			root->left = leftRotate(root->left);
-			return rightRotate(root);
-		}
-
-		//right left case
-		if (balance < -1 && getBalance(root->right) > 0)
-		{
-			root->right = rightRotate(root->right);
-			return leftRotate(root);
-		}
-
-		return root;
-	}
-
-
-public:
-	AVLTree()
-	{
-		root = NULL;
-	}
-
-
-	void add(double value)
-	{
-		if (root == nullptr)
-		{
-			root = new Node{ value,nullptr,nullptr };
-		}
-
-		else if (contains(value) == true)
-		{
-			std::cout << value << " already added\n";
+			free(temp);
 		}
 		else
 		{
-			root = insertNode(root, value);
+			node* temp = minNode(n->right);
+			n->data = temp->data;
+			n->right = deleteNode(n->right, temp->data);
 		}
 	}
 
-	void remove(double value)
+	if (n == nullptr)
 	{
-
-		if (root == nullptr)
-		{
-			std::cout << " tree is empty\n";
-		}
-
-		else if (contains(value) == false)
-		{
-			std::cout << value << " not found to remove\n";
-		}
-		else
-		{
-			root = deleteNode(root, value);
-		}
+		return n;
 	}
 
-	bool contains(double value)
+	n->height = max(height(n->left), height(n->right)) + 1;
+	int balance = getBalance(n);
+
+	//left left
+	if (balance > 1 && getBalance(n->left) >= 0)
 	{
-		if (root == NULL)
-		{
-			return false;
-		}
-
-		return containsRecursive(root, value);
+		return rightRotate(n);
 	}
-
-	void print()
+	//right right
+	if (balance < -1 && getBalance(n->right) <= 0)
 	{
-		if (root == NULL)
-		{
-			return;
-		}
-
-		printRecursive(root);
-		std::cout << "\n";
+		return leftRotate(n);
 	}
-};
+	//left right
+	if (balance > 1 && getBalance(n->left) < 0)
+	{
+		n->left = leftRotate(n->left);
+		return rightRotate(n);
+	}
+	//right left
+	if (balance < -1 && getBalance(n->right) > 0)
+	{
+		n->right = rightRotate(n->right);
+		return leftRotate(n);
+	}
+	return n;
+}
+
+inline bool AVLTree::containsRecursive(node* n, int value)
+{
+	if (n == nullptr)
+	{
+		return false;
+	}
+	if (value == n->data)
+	{
+		return true;
+	}
+	if (value < n->data)
+	{
+		containsRecursive(n->left, value);
+	}
+	if (value > n->data)
+	{
+		containsRecursive(n->right, value);
+	}
+}
+
+inline void AVLTree::printRecursive(node* n)
+{
+	if (n == nullptr)
+	{
+		return;
+	}
+	printRecursive(n->left);
+	std::cout << n->data << " ";
+	printRecursive(n->right);
+}
