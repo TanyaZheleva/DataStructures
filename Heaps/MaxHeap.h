@@ -15,8 +15,7 @@ private:
 
 	int getParent(int index);
 	int getRightChild(int index);
-	int getLeftChild
-	(int index);
+	int getLeftChild(int index);
 	bool hasRightChild(int index);
 	bool hasLeftChild(int index);
 
