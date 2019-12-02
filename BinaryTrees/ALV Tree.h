@@ -28,7 +28,10 @@ public:
 	void add(int value);
 	void remove(int value);
 	bool contains(int value);
-	void print();
+	void inorder();
+	void preorder();
+	void postorder();
+	void BFS();
 private:
 	node* root;
 
@@ -40,7 +43,11 @@ private:
 	node* insertNode(node* n, int value);
 	node* deleteNode(node* n, int value);
 	bool containsRecursive(node* n, int value);
-	void printRecursive(node* n);
+	void inorderRecursive(node* n);
+	void preorderRecursive(node* n);
+	void postorderRecursive(node* n);
+	void givenLevel(node* n, int level);
+	void levelOrderTraversal(node* n);
 };
 
 inline AVLTree::AVLTree()
@@ -85,15 +92,44 @@ inline bool AVLTree::contains(int value)
 	return containsRecursive(root, value);
 }
 
-inline void AVLTree::print()
+inline void AVLTree::inorder()
 {
-
 	if (root == nullptr)
 	{
+		std::cout << "The tree is empty.\n";
 		return;
 	}
-	printRecursive(root);
-	std::cout << "\n";
+	inorderRecursive(root);
+}
+
+inline void AVLTree::preorder()
+{
+	if (root == nullptr)
+	{
+		std::cout << "The tree is empty.\n";
+		return;
+	}
+	preorderRecursive(root);
+}
+
+inline void AVLTree::postorder()
+{
+	if (root == nullptr)
+	{
+		std::cout << "The tree is empty.\n";
+		return;
+	}
+	postorderRecursive(root);
+}
+
+inline void AVLTree::BFS()
+{
+	if (root == nullptr)
+	{
+		std::cout << "The tree is empty.\n";
+		return;
+	}
+	levelOrderTraversal(root);
 }
 
 inline int AVLTree::height(node* n)
@@ -287,13 +323,70 @@ inline bool AVLTree::containsRecursive(node* n, int value)
 	}
 }
 
-inline void AVLTree::printRecursive(node* n)
+inline void AVLTree::inorderRecursive(node* n)
 {
 	if (n == nullptr)
 	{
 		return;
 	}
-	printRecursive(n->left);
+	inorderRecursive(n->left);
 	std::cout << n->data << " ";
-	printRecursive(n->right);
+	inorderRecursive(n->right);
+}
+
+inline void AVLTree::preorderRecursive(node* n)
+{
+
+	if (n == nullptr)
+	{
+		return;
+	}
+	std::cout << n->data << " ";
+	preorderRecursive(n->left);
+	preorderRecursive(n->right);
+}
+
+inline void AVLTree::postorderRecursive(node* n)
+{
+	if (n == nullptr)
+	{
+		return;
+	}
+	postorderRecursive(n->right);
+	std::cout << n->data << " ";
+	postorderRecursive(n->left);
+}
+
+inline void AVLTree::givenLevel(node* n, int level)
+{
+	if (n == nullptr)
+	{
+		return;
+	}
+	if (level == 0)
+	{
+		return;
+	}
+	if (n != nullptr && level == 1)
+	{
+		std::cout << n->data << " ";
+	}
+	else if (level > 1)
+	{
+		givenLevel(n->left, level - 1);
+		givenLevel(n->right, level - 1);
+	}
+}
+
+inline void AVLTree::levelOrderTraversal(node* n)
+{
+	if (n == nullptr)
+	{
+		return;
+	}
+	int h = height(n);
+	for (int i = 1; i <= h; i++)
+	{
+		givenLevel(n, i);
+	}
 }
