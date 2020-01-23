@@ -75,6 +75,28 @@ class Graph
 		return edges;
 	}
 
+	bool cycleUtil(int v, vector<bool>& visited, vector<bool>& recs)
+	{
+		if (visited[v] == false)
+		{
+			visited[v] = true;
+			recs[v] = true;
+			for (auto i : nodes[v].neighbours)
+			{
+				if (!visited[i.val] && cycleUtil(i.val, visited, recs))
+				{
+					return true;
+				}
+				else if (recs[i.val])
+				{
+					return true;
+				}
+			}
+		}
+		recs[v] = false;
+		return false;
+	}
+
 public:
 	Graph(int n)
 	{
@@ -87,7 +109,7 @@ public:
 		nodes[to].addNeighbour(from, weight);
 	}
 
-	void BFS(int start) 
+	void BFS(int start)
 	{
 		vector<bool> visited(nodes.size(), false);
 		queue<Pair> tpn;
@@ -188,5 +210,19 @@ public:
 		{
 			cout << e.from << "-" << e.to << "(" << e.weight << ")\n";
 		}
+	}
+
+	bool cycle()
+	{
+		vector<bool> visited(nodes.size(), false);
+		vector<bool> recst(nodes.size(), false);
+		for (int i = 1; i < nodes.size(); i++)
+		{
+			if (cycleUtil(i, visited, recst))
+			{
+				return true;
+			}
+		}
+		return false;
 	}
 };
