@@ -139,15 +139,34 @@ node* remove(node* root, int value)
 	}
 	else if (root->data == value)
 	{
-		if (root->left == nullptr)
-		{
-			node* temp = root->right;
-			delete root;
-			return temp;
-		}
-		node* maxInLeft = maxElement(root->left);
-		root->data = maxInLeft->data;
-		root->left = remove(root->left, root->data);
+		if (!root->left && !root->right)
+			{
+				free(root);
+				return nullptr;
+			}
+			else if (!root->left)
+			{
+				node* tempRight = root->right;
+				free(root);
+				return tempRight;
+			}
+			else if (!root->right)
+			{
+				node* tempLeft = root->left;
+				free(root);
+				return tempLeft;
+			}
+			else
+			{
+				node* swapWith = root->right;
+				while (swapWith->left)
+				{
+					swapWith = swapWith->left;
+				}
+
+				root->data = swapWith->data;
+				root->right = remove(root->right, swapWith->data);
+			}
 	}
 	return root;
 }
